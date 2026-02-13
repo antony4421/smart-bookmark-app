@@ -42,24 +42,27 @@ export default function Home() {
 
   // 2. Realtime Listener (Handles Syncing from OTHER tabs)
   useEffect(() => {
-    if (!user) return
+    // FIX: Only run if we have a user ID (prevents constant resets)
+    if (!user?.id) return
 
     const channel = supabase
       .channel('realtime bookmarks')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'bookmarks' }, (payload) => {
+        console.log('Realtime Event Received:', payload) // Check console to verify
+
         if (payload.eventType === 'INSERT') {
           setBookmarks((prev) => {
-            // Prevent duplicate display if we already added it optimistically
-            // We check if an item with the same URL exists or if the ID matches
-            const exists = prev.some(b => b.id === payload.new.id || (b.id > 1000000000000 && b.url === payload.new.url))
+            // Check if we already have this item (by ID or temporary ID)
+            const exists = prev.some(b => b.id === payload.new.id || (b.id > 1000000000000 && b.url === (payload.new as any).url))
+            
             if (exists) {
-                // If we have a "fake" temporary one, swap it for the real one (logic simplified here by just filtering)
-                return prev.map(b => (b.id > 1000000000000 && b.url === payload.new.url) ? (payload.new as Bookmark) : b)
+                // If it exists, update it (swap temp ID for real ID)
+                return prev.map(b => (b.id > 1000000000000 && b.url === (payload.new as any).url) ? (payload.new as Bookmark) : b)
             }
+            // If it's new (from another device), add it to the top
             return [payload.new as Bookmark, ...prev]
           })
         } else if (payload.eventType === 'DELETE') {
-          // Removes item when deleted from ANOTHER tab
           setBookmarks((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
       })
@@ -68,7 +71,7 @@ export default function Home() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [supabase, user])
+  }, [supabase, user?.id]) // <--- THIS IS THE FIX (user?.id instead of user)
 
   const fetchBookmarks = async () => {
     const { data } = await supabase.from('bookmarks').select('*').order('created_at', { ascending: false })
