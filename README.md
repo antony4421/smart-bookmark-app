@@ -15,14 +15,48 @@ The Supabase client was being initialized directly inside the component body:
 ```javascript
 // ❌ Bad Code
 const supabase = createClient() // Runs on every single re-render
+```
 This caused a new connection to open every time React re-rendered the component.
 
 The Solution:
 I wrapped the client initialization in a useState lazy initializer to ensure it is created only once per session.
 
+// ✅ Fixed Code
+const [supabase] = useState(() => createClient())
+
+Gemini said
+Here is a README.md focusing specifically on the Technical Challenges & Solutions. This is excellent for your portfolio or assignment submission because it shows how you debugged and solved real-world problems.
+
+Copy the code block below:
+
+Markdown
+# 📚 Smart Bookmark App - Development Journey
+
+A real-time bookmark manager built with **Next.js 15**, **Supabase**, and **Tailwind CSS**. This document highlights the technical challenges faced during development and the solutions implemented to resolve them.
+
+## 🛠️ Technical Challenges & Solutions
+
+During the development of this application, several key issues were encountered regarding real-time synchronization, Next.js 15 compatibility, and UI performance. Below is a log of these problems and their fixes.
+
+### 1. 🛑 WebSocket Connection Overload
+**The Problem:**
+Upon launching the app, the console was flooded with errors: `WebSocket connection failed: WebSocket is closed before the connection is established`. The app was attempting to open hundreds of connections per second, causing Supabase to block the client.
+
+**The Cause:**
+The Supabase client was being initialized directly inside the component body:
+```javascript
+// ❌ Bad Code
+const supabase = createClient() // Runs on every single re-render
+```
+This caused a new connection to open every time React re-rendered the component.
+
+The Solution:
+I wrapped the client initialization in a useState lazy initializer to ensure it is created only once per session.
+```
 JavaScript
 // ✅ Fixed Code
 const [supabase] = useState(() => createClient())
+```
 2. ⚡ Real-Time Sync Lag (Cross-Device)
 The Problem:
 When deleting a bookmark on a laptop, it would not disappear from the mobile device without a manual refresh. The real-time listener was active, but it wasn't catching the DELETE events consistently.
@@ -38,10 +72,11 @@ The Solution:
 Database: Ran the SQL command alter table bookmarks replica identity full; to ensure deleted IDs are broadcasted.
 
 Frontend: Changed the dependency array to use the stable user.id string instead of the object.
-
+```
 JavaScript
 // ✅ Fixed Dependency
 useEffect(() => { ... }, [supabase, user?.id])
+```
 3. 🚀 Slow UI Feedback (Latency)
 The Problem:
 There was a noticeable delay between clicking "Add" and seeing the bookmark appear. The app was waiting for the server round-trip before updating the UI, making the app feel sluggish.
@@ -66,10 +101,11 @@ In Next.js 15, the cookies() function became asynchronous, returning a Promise i
 
 The Solution:
 Updated the route handler to await the cookie store:
-
+```
 TypeScript
 // ✅ Fixed Route Handler
 const cookieStore = await cookies()
+```
 ✨ Key Features
 Instant Sync: Bookmarks appear across devices instantly.
 
@@ -80,4 +116,5 @@ Auto-Favicons: Automatically pulls website logos.
 Secure: Row Level Security (RLS) ensures data privacy.
 
 🚀 Live Demo
-https://smart-bookmark-app-rho-navy.vercel.app
+https://smart-bookmark-app-rho-navy.vercel.app/
+
