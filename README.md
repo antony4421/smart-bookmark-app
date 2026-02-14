@@ -87,3 +87,11 @@ Secure: Row Level Security (RLS) ensures data privacy.
 🚀 Live Demo
 https://smart-bookmark-app-rho-navy.vercel.app/
 
+
+## 🔮 Future Improvements
+
+If I had more time, I would add:
+-   **🔍 Search & Filter:** A search bar to find bookmarks instantly.
+-   **📂 Folders/Tags:** To categorize bookmarks (e.g., "Work", "Music", "Dev").
+-   **🖼️ Meta Scraping:** Automatically fetch the website title and description when a user pastes a link.
+-   **🌙 Dark/Light Mode Toggle:** A manual switch for themes.
