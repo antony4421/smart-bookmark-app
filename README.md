@@ -1,35 +1,4 @@
-# 📚 Smart Bookmark App - Development Journey
 
-A real-time bookmark manager built with **Next.js 15**, **Supabase**, and **Tailwind CSS**. This document highlights the technical challenges faced during development and the solutions implemented to resolve them.
-
-## 🛠️ Technical Challenges & Solutions
-
-During the development of this application, several key issues were encountered regarding real-time synchronization, Next.js 15 compatibility, and UI performance. Below is a log of these problems and their fixes.
-
-### 1. 🛑 WebSocket Connection Overload
-**The Problem:**
-Upon launching the app, the console was flooded with errors: `WebSocket connection failed: WebSocket is closed before the connection is established`. The app was attempting to open hundreds of connections per second, causing Supabase to block the client.
-
-**The Cause:**
-The Supabase client was being initialized directly inside the component body:
-```javascript
-// ❌ Bad Code
-const supabase = createClient() // Runs on every single re-render
-```
-This caused a new connection to open every time React re-rendered the component.
-
-The Solution:
-I wrapped the client initialization in a useState lazy initializer to ensure it is created only once per session.
-
-// ✅ Fixed Code
-const [supabase] = useState(() => createClient())
-
-Gemini said
-Here is a README.md focusing specifically on the Technical Challenges & Solutions. This is excellent for your portfolio or assignment submission because it shows how you debugged and solved real-world problems.
-
-Copy the code block below:
-
-Markdown
 # 📚 Smart Bookmark App - Development Journey
 
 A real-time bookmark manager built with **Next.js 15**, **Supabase**, and **Tailwind CSS**. This document highlights the technical challenges faced during development and the solutions implemented to resolve them.
